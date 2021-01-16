@@ -59,7 +59,7 @@ async function report() {
     await frame.click('#login_button');
     await page.waitForNavigation({waitUntil: "networkidle0"});
     // 疫情上报的url可能不同，根据自己情况填入
-    await page.goto('http://eportal.uestc.edu.cn/jkdkapp/sys/lwReportEpidemicStu/index.do?t_s=1610503167574&amp_sec_version_=1&gid_=SlgwT3dKMDBNUTZIUHE1TldpL0FzL3FlanM2NmozWjJsdjhvQytlcUdLUHlwQzZJRDdJSWgrWmU0aTZRTURnNCsxTkVYRFpvZEcvRTZ2YmtJcWZIYnc9PQ&EMAP_LANG=zh&THEME=indigo#/dailyReport', {waitUntil:"networkidle0"});
+    await page.goto('your url', {waitUntil:"networkidle0"});
     await page.click('div[data-action="add"]');
     await page.waitForTimeout(2000);
     await page.evaluate(()=>{
