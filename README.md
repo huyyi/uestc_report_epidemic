@@ -4,7 +4,7 @@
 
 ## 介绍
 
-check_name.js：晚点名，仅测试信通研究生，需修改为自己的姓名与学号
+dianming.js：晚点名，仅测试信通研究生，需修改为自己的姓名与学号
 
 report_demic.js：每日疫情上报
 
@@ -13,5 +13,6 @@ report_demic.js：每日疫情上报
 1. 安装`Node.js`
 2. `npm install`
 3. 在[此处](https://npm.taobao.org/mirrors/chromium-browser-snapshots/Win_x64/)下载 Chrome，要求版本低于87.*,放到 `./Chrome/`
-4. 修改`config.js`中个人的相关配置
+4. 修改`config.js`中个人的相关配置，注意Chrome路径`\`需要转义
 5. 运行`node filename.js`
+6. 关于自动运行，可以使用定时任务
