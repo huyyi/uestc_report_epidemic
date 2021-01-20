@@ -7,13 +7,15 @@ const config = {
     // 每日打卡信息
     user_id: "", // 学号
     passwd: "", // 统一认证密码
+    screenshot_dir: "",
     
 
     // 晚点名信息
     name:"",
     id:"",
     lat: 30, // 模拟定位经纬度
-    lon: 106
+    lon: 106,
+    dm_screenshot_dir: ""
 }
 
 module.exports = config

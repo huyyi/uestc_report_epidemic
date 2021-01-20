@@ -35,6 +35,17 @@ function preload(){
     );
 };
 
+function login_bypass(config){
+    // 参考@onion-rai/uestc_health_report的绕过脚本
+    var casLoginForm = document.getElementById("casLoginForm");
+    var username = document.getElementById("username");
+    var password = document.getElementById("password");
+    username.value = config.user_id;
+    password.value = config.passwd;
+    _etd2(password.value, document.getElementById("pwdDefaultEncryptSalt").value);
+    casLoginForm.submit();
+}
+
 async function report() {
     console.log("▶程序开始");
     const browser = await puppeteer.launch({
@@ -55,17 +66,8 @@ async function report() {
             waitUntil:"networkidle0"
         });
 
-        await page.evaluate((config)=>{
-            // 参考@onion-rai/uestc_health_report的绕过脚本
-            var casLoginForm = document.getElementById("casLoginForm");
-            var username = document.getElementById("username");
-            var password = document.getElementById("password");
-            username.value = config.user_id;
-            password.value = config.passwd;
-            _etd2(password.value, document.getElementById("pwdDefaultEncryptSalt").value);
-            casLoginForm.submit();
-        }, config);
-
+        await page.evaluate(login_bypass, config);
+        
         await page.waitForNavigation({waitUntil:"networkidle0"});
         const user_id = await page.evaluate(()=>USER_INFO.info[0]);
         if (user_id == config.user_id) {
@@ -82,7 +84,7 @@ async function report() {
         if (today_status == "今日已填报！") {
             console.log("🎉今日已填报！");
             if (config.save_screenshot) {
-                await page.screenshot({path:'./screenshot/'+ new Date().toLocaleDateString().split('/').join('-') + '.png'});
+                await page.screenshot({path: config.screenshot_dir + new Date().toLocaleDateString().split('/').join('-') + '.png'});
                 console.log("📂已生成截图");
             }
             return 0
@@ -102,7 +104,7 @@ async function report() {
         if (today_status == "今日已填报！") {
             console.log("✔填报成功");
             if (config.save_screenshot) {
-                await page.screenshot('./screenshot/'+ new Date().toLocaleDateString() + '.png');
+                await page.screenshot(config.screenshot_dir + new Date().toLocaleDateString() + '.png');
                 console.log("📂已生成截图");
             }
             return 0

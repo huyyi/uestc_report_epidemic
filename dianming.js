@@ -44,7 +44,7 @@ async function report() {
 
         await page.waitForSelector('div.message');
         if (config.save_screenshot) {
-            await page.screenshot('./screenshot/'+ new Date().toLocaleDateString() + '.png');
+            await page.screenshot( config.dm_screenshot_dir + new Date().toLocaleDateString() + '.png');
             console.log("📂已生成截图");
         }
         console.log('check success');
