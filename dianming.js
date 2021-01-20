@@ -39,11 +39,14 @@ async function report() {
         console.log('get pos');
     
         await page.waitForSelector('div.geo-filed__header-latlng span');
-        // await page.evaluate(()=>{window.alert('submmit')});
         await page.click('div.published-form__footer-buttons');
         console.log('submmit');
 
         await page.waitForSelector('div.message');
+        if (config.save_screenshot) {
+            await page.screenshot('./screenshot/'+ new Date().toLocaleDateString() + '.png');
+            console.log("📂已生成截图");
+        }
         console.log('check success');
     }
     catch(e){
