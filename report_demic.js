@@ -1,16 +1,17 @@
 const puppeteer = require('puppeteer');
+const config = require('./config');
 
 async function report() {
     console.log("begin");
     const browser = await puppeteer.launch({
-        executablePath:"chrome\\chrome78-win\\chrome.exe", // 修改为自己的chrome路径
+        executablePath: config.chrome_exepath,
         ignoreDefaultArgs: ["--enable-automation"],
-        headless:true
+        headless:config.headless
     });
 
     const page = await browser.newPage();
 
-    await page.evaluateOnNewDocument(() => { //在每个新页面打开前执行以下脚本
+    function preload(){ //在每个新页面打开前执行以下脚本
         const newProto = navigator.__proto__;
         delete newProto.webdriver;  //删除navigator.webdriver字段
         navigator.__proto__ = newProto;
@@ -40,37 +41,74 @@ async function report() {
                 Promise.resolve({ state: Notification.permission }) :
                 originalQuery(parameters)
         );
-    });
-      
+    };
 
-    await page.goto('https://idas.uestc.edu.cn/authserver/login?service=http%3A%2F%2Feportal.uestc.edu.cn%2Flogin%3Fservice%3Dhttp%3A%2F%2Feportal.uestc.edu.cn%2Fnew%2Findex.html', {
-        waitUntil:"networkidle0"
-    });
+    
 
-    await page.click('div.dlk-qq');
-    await page.waitForSelector('div.lay_login_form');
-    let frame = await page.frames()[1];
-    await frame.waitForNavigation({waitUntil: "networkidle0"});
-    await frame.waitForSelector('#switcher_plogin')
-    await frame.click('#switcher_plogin');
-    await frame.waitForSelector('#u');
-    await frame.type('#u', 'qq'); //qq账号
-    await frame.type('#p', 'pswd'); //qq密码
-    await frame.click('#login_button');
-    await page.waitForNavigation({waitUntil: "networkidle0"});
-    // 疫情上报的url可能不同，根据自己情况填入
-    await page.goto('your url', {waitUntil:"networkidle0"});
-    await page.click('div[data-action="add"]');
-    await page.waitForTimeout(2000);
-    await page.evaluate(()=>{
-        $('#save').click();
-    });
-    await page.waitForTimeout(2000);
-    await page.evaluate(()=>{
-        $('a.bh-dialog-btn.bh-bg-primary.bh-color-primary-5').click();
-    });
-    await page.waitForTimeout(5000);
-    await browser.close();
+    try{
+        const app_ver = await page.evaluate(()=> navigator.appVersion.split(' ')[10] < 'Chrome/88.0');
+        if(!app_ver){
+            throw new Error('Chrome 版本过高，请选择87.*及以下')
+        }
+        await page.evaluateOnNewDocument(preload);
+        await page.goto('http://eportal.uestc.edu.cn/jkdkapp/sys/lwReportEpidemicStu/index.do?#/dailyReport', {
+            waitUntil:"networkidle0"
+        });
+
+        await page.evaluate((config)=>{
+            // 参考@onion-rai/uestc_health_report的绕过脚本
+            var casLoginForm = document.getElementById("casLoginForm");
+            var username = document.getElementById("username");
+            var password = document.getElementById("password");
+            username.value = config.user_id;
+            password.value = config.passwd;
+            _etd2(password.value, document.getElementById("pwdDefaultEncryptSalt").value);
+            casLoginForm.submit();
+        }, config);
+
+        await page.waitForNavigation({waitUntil:"networkidle0"});
+        const user_id = await page.evaluate(()=>USER_INFO.info[0]);
+        if (user_id == config.user_id) {
+            console.log("✔登陆成功！登陆用户："+user_id);
+        }
+        else{
+            throw new Error("登陆失败");
+        }
+        
+        await page.click('div[data-action="add"]');
+        await page.waitForTimeout(2000);
+        // const today_status = await page.evaluate(()=>document.querySelector('.content').innerText);
+        // if (today_status == "今日已填报！") {
+        //     if (config.save_screenshot) {
+        //         await page.screenshot('./'+ new Date().toLocaleDateString() + '.png');
+        //     }
+        //     break
+        // }
+        await page.evaluate(()=>{
+            $('#save').click();
+        });
+        await page.waitForTimeout(2000);
+        await page.evaluate(()=>{
+            $('a.bh-dialog-btn.bh-bg-primary.bh-color-primary-5').click();
+        });
+        await page.waitForTimeout(5000);
+        await page.click('div[data-action="add"]');
+        await page.waitForTimeout(2000);
+        const today_status = await page.evaluate(()=>document.querySelector('.content').innerText);
+        if (today_status == "今日已填报！") {
+            console.log("✔填报成功");
+            if (config.save_screenshot) {
+                await page.screenshot('./'+ new Date().toLocaleDateString() + '.png');
+            }
+        }
+
+    }
+    catch(e){
+        console.log("✖Error:"+e)
+    }
+    finally{
+        browser.close();
+    }
 }
 
 report();

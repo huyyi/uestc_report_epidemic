@@ -1,33 +1,27 @@
 const puppeteer = require('puppeteer');
+const config = require('./config');
 
-async function check_name() {
+async function report() {
+    console.log("begin");
     const browser = await puppeteer.launch({
-        // executablePath:"D:\\Downloads\\MSEdge\\chrome-win\\chrome.exe", // 修改为自己的 Chrome 路径
+        executablePath: config.chrome_exepath,
         ignoreDefaultArgs: ["--enable-automation"],
-        devtools: true,
-        defaultViewport: {
-            width: 1500,
-            height: 800
-        }
+        headless:config.headless
     });
 
     const page = await browser.newPage();
 
     const context = browser.defaultBrowserContext();
-    // 开启Chrome位置模拟
     await context.overridePermissions('https://jinshuju.net', ['geolocation']);
 
-    // 填报url可能不一致，需自己修改
     await page.goto('https://jinshuju.net/f/9wGVFn/', {
         waitUntil:"networkidle0"
     });
     try{
-        await page.type('input.field_6', "张三");  // 姓名
+        await page.type('input.field_6', config.name);
         console.log('fillin name');
-        await page.type('input.field_5', '1234567'); // 学号
+        await page.type('input.field_5', config.id);
         console.log('fillin id');
-
-        // 以下为信通研究生的点击规则，有不同的需自己修改
         await page.click('input[value="Povx"]');
         console.log('check 1');
         await page.waitForSelector('div.field_24 input[value="FRjZ"]');
@@ -39,7 +33,7 @@ async function check_name() {
         await page.waitForSelector('div.field_9 input[value="Zda4"]');
         await page.click('div.field_9 input[value="Zda4"]');
         console.log('check 4');
-        await page.setGeolocation({ latitude: 30.75233, longitude: 103.92567 });
+        await page.setGeolocation({ latitude: config.lat, longitude:  config.lon});
         await page.waitForSelector('div.field_21 button');
         await page.click('div.field_21 button');
         console.log('get pos');
