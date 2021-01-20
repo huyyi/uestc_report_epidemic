@@ -55,4 +55,4 @@ async function report() {
     }
 }
 
-check_name();
+report();
