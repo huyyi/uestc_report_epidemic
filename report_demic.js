@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const config = require('./config');
+const config = require('./my_config');
 
 function preload(){ 
     // 浏览器伪装
