@@ -47,7 +47,7 @@ function login_bypass(config){
 }
 
 async function report() {
-    console.log("▶程序开始");
+    console.log(new Date().toLocaleDateString() + ": ▶程序开始");
     const browser = await puppeteer.launch({
         executablePath: config.chrome_exepath,
         ignoreDefaultArgs: ["--enable-automation"],
@@ -80,15 +80,6 @@ async function report() {
         await page.waitForSelector('div[data-action="add"]');
         await page.click('div[data-action="add"]');
         await page.waitForTimeout(2000);
-        let today_status = await page.evaluate(()=>document.querySelector('.content').innerText);
-        if (today_status == "今日已填报！") {
-            console.log("🎉今日已填报！");
-            if (config.save_screenshot) {
-                await page.screenshot({path: config.screenshot_dir + new Date().toLocaleDateString().split('/').join('-') + '.png'});
-                console.log("📂已生成截图");
-            }
-            return 0
-        }
         await page.evaluate(()=>{
             $('#save').click();
         });

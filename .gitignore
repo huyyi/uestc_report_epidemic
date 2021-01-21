@@ -107,3 +107,5 @@ dist
 Chrome
 
 my_config.js
+
+*.bat
