@@ -15,3 +15,4 @@ report_demic.js：每日疫情上报
 3. 在[此处](https://npm.taobao.org/mirrors/chromium-browser-snapshots/Win_x64/)下载 Chrome，要求版本低于87.*,放到 `./Chrome/`
 4. 按照`config.js`创建`my_config.js`，注意Chrome路径`\`需要转义
 5. 运行`node filename.js`
+6. 运行`create_task.bat`创建windows计划任务

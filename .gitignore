@@ -109,3 +109,4 @@ Chrome
 my_config.js
 
 *.bat
+package-lock.json
