@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/huyyi/uestc_report_epidemic#readme",
   "dependencies": {
+    "puppeteer-core": "^11.0.0",
     "puppetree": "^1.0.0"
   }
 }
