@@ -2,6 +2,9 @@
 
 使用`Puppetree`控制Chrome实现自动每日疫情上报和晚点名，点击规则请自己修改，都是简单的JQuery选择器语法
 
+## 12.10 更新
+统一认证的验证码绕过已经失效，建议使用[onion-rain/uestc_health_report](https://github.com/onion-rain/uestc_health_report)
+
 ## 介绍
 
 dianming.js：晚点名，仅测试信通研究生，需修改为自己的姓名与学号
